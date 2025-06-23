@@ -4,6 +4,7 @@ import com.real.interview.model.dao.MovieDao;
 import com.real.interview.model.dto.MovieDto;
 import com.real.interview.service.MovieService;
 import org.springframework.http.HttpMessage;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,14 +23,14 @@ public class MovieController {
     @PostMapping
     public ResponseEntity<MovieDto> create(@RequestBody MovieDao movieDao) {
         MovieDto createdMovie = movieService.createMovie(movieDao);
-        return ResponseEntity.ok(createdMovie);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdMovie);
     }
     @GetMapping
     public ResponseEntity<MovieDto> get(@PathVariable Long id) {
         return  movieService.getMovie(id).map((ResponseEntity::ok)).orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<MovieDto>> list() {
         return ResponseEntity.ok(movieService.getAllMovie());
     }
