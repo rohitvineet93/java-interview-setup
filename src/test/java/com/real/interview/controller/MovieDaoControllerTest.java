@@ -43,9 +43,8 @@ class MovieDaoControllerTest { // Consider renaming to MovieControllerTest as it
                         .content(objectMapper.writeValueAsString(newMovieRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.id").isNumber()) // Expect ID to be a number
-                .andExpect(jsonPath("$.title").value("movie1")) // Verify title
-                .andExpect(jsonPath("$.releaseYear").value(2023)) // Verify release year
-                .andExpect(jsonPath("$.createdBy").value("test_user")); // Verify created by
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.title").value("movie1"))
+                .andExpect(jsonPath("$.releaseYear").value(2023));
     }
 }

@@ -1,15 +1,12 @@
 package com.real.interview.controller;
 
-import com.real.interview.model.dao.MovieDao;
 import com.real.interview.model.dto.MovieDto;
 import com.real.interview.service.MovieService;
-import org.springframework.http.HttpMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/movies")
@@ -21,8 +18,8 @@ public class MovieController {
     }
 
     @PostMapping
-    public ResponseEntity<MovieDto> create(@RequestBody MovieDao movieDao) {
-        MovieDto createdMovie = movieService.createMovie(movieDao);
+    public ResponseEntity<MovieDto> create(@RequestBody MovieDto movieDto) {
+        MovieDto createdMovie = movieService.createMovie(movieDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMovie);
     }
     @GetMapping
