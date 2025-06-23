@@ -3,40 +3,73 @@ package com.real.interview.service;
 import com.real.interview.model.dao.MovieDao;
 import com.real.interview.model.dto.MovieDto;
 import com.real.interview.repository.MovieRepository;
+import com.real.interview.util.MovieConverter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
     private final MovieRepository movieRepository;
-    public MovieService(MovieRepository movieRepository) {
+    private final MovieConverter movieConverter;
+
+    // Constructor Injection
+    public MovieService(MovieRepository movieRepository, MovieConverter movieConverter) {
         this.movieRepository = movieRepository;
+        this.movieConverter = movieConverter;
     }
-    public MovieDao createMovie(MovieDao movieDao) {
-        return movieRepository.save(movieDao);
+
+    public MovieDto createMovie(MovieDao movieDao) {
+        MovieDao savedMovie = movieRepository.save(movieDao);
+        return movieConverter.convertToDto(savedMovie); // Using the converter
     }
-    public Optional<MovieDao> getMovie(Long id) {
-        return movieRepository.findById(id);
+
+    public Optional<MovieDto> getMovie(Long id) {
+        // Find the DAO, then map it to DTO using the converter
+        return movieRepository.findById(id)
+                .map(movieConverter::convertToDto); // Concise way to use Optional.map with a method reference
     }
-    public List<MovieDao> getAllMovie() {
-        return movieRepository.findAll();
+
+    public List<MovieDto> getAllMovie() {
+        List<MovieDao> movieDaos = movieRepository.findAll();
+        // Convert the list of DAOs to a list of DTOs using stream and converter
+        return movieDaos.stream()
+                .map(movieConverter::convertToDto) // Using the converter
+                .collect(Collectors.toList());
     }
-    public MovieDao updateMovie(Long id, MovieDao movieDto) {
+
+    public MovieDto updateMovie(Long id, MovieDto movieDto) {
         return movieRepository.findById(id).map(m -> {
-            m.setTitle(movieDto.getTitle());
+            m.setTitle(movieDto.getTitle()); // <-- Error points here (or a similar line)
             m.setReleaseYear(movieDto.getReleaseYear());
-            return movieRepository.save(m);
+            movieRepository.save(m);
+            return movieDto;
         }).orElseThrow(() -> new RuntimeException("Movie not found"));
     }
+
     public void deleteMovie(Long id) {
+        // Optional: Check if movie exists before deleting
+        if (!movieRepository.existsById(id)) {
+            throw new RuntimeException("Movie not found with ID: " + id);
+        }
         movieRepository.deleteById(id);
     }
-    public List<MovieDao> searchByTitle(String title) {
-        return movieRepository.findByTitleContainingIgnoreCase(title);
+
+    // Change return type to List<MovieDto> and use the converter
+    public List<MovieDto> searchByTitle(String title) {
+        List<MovieDao> movieDaos = movieRepository.findByTitleContainingIgnoreCase(title);
+        return movieDaos.stream()
+                .map(movieConverter::convertToDto)
+                .collect(Collectors.toList());
     }
-    public List<MovieDao> searchByReleaseYear(Integer releaseYear) {
-        return movieRepository.findByReleaseYear(releaseYear);
+
+    // Change return type to List<MovieDto> and use the converter
+    public List<MovieDto> searchByReleaseYear(Integer releaseYear) {
+        List<MovieDao> movieDaos = movieRepository.findByReleaseYear(releaseYear);
+        return movieDaos.stream()
+                .map(movieConverter::convertToDto)
+                .collect(Collectors.toList());
     }
 }

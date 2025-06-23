@@ -1,6 +1,7 @@
 package com.real.interview.repository;
 
 import com.real.interview.model.dao.MovieDao;
+import com.real.interview.model.dto.MovieDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
